@@ -5,7 +5,6 @@
  */
 package com.webappguy.nonrecursivedfs;
 
-import com.webappguy.nonrecursivedfs.impl.TreeNodeImpl;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -57,31 +56,5 @@ public class DFSUtil {
         }
         
         return visited;
-    }
-    
-    public static void main(String[] args) {
-        // test data
-        List<DFSTreeNode> rawNodes = new ArrayList<>();
-        
-        rawNodes.add(new TreeNodeImpl(11,10));
-        rawNodes.add(new TreeNodeImpl(10,9));
-        rawNodes.add(new TreeNodeImpl(3,1));
-        rawNodes.add(new TreeNodeImpl(5,3));
-        rawNodes.add(new TreeNodeImpl(7,4));
-        rawNodes.add(new TreeNodeImpl(12,9));
-        rawNodes.add(new TreeNodeImpl(2,0));
-        rawNodes.add(new TreeNodeImpl(8,4));
-        rawNodes.add(new TreeNodeImpl(4,1));
-        rawNodes.add(new TreeNodeImpl(6,5));
-        rawNodes.add(new TreeNodeImpl(1,0));
-        rawNodes.add(new TreeNodeImpl(9,7));
-        rawNodes.add(new TreeNodeImpl(0,-1));
-        
-        
-        List<DFSTreeNode> results = sortDFS(rawNodes);
-        
-        for(DFSTreeNode node : results){
-            System.out.println(node.getObject());
-        }
     }
 }

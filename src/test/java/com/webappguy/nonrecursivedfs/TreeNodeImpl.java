@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.webappguy.nonrecursivedfs.impl;
+package com.webappguy.nonrecursivedfs;
 
 import com.webappguy.nonrecursivedfs.DFSTreeNode;
 

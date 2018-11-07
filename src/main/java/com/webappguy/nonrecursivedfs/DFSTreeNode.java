@@ -28,4 +28,5 @@ public interface DFSTreeNode {
     public boolean equals(DFSTreeNode anotherNode);
     
     public boolean isChildOf(DFSTreeNode testParent);
+    
 }

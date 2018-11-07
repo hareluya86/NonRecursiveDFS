@@ -6,7 +6,6 @@
 package com.webappguy.nonrecursivedfs;
 
 import static com.webappguy.nonrecursivedfs.DFSUtil.sortDFS;
-import com.webappguy.nonrecursivedfs.impl.TreeNodeImpl;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
