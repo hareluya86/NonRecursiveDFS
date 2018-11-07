@@ -1,6 +1,10 @@
 # NonRecursiveDFS
 Sorts a set of uni-linked nodes (node->parent) using the Depth-First Search algorithm and returns the list in the sequence which the nodes will be visited.
 
+## Assumptions:
+- TreeNodes are comparable and sorted so that the root node can be found by `List.sort()` method.
+- Nodes are linked to their parent nodes - parents can be found by implementing `DFSTreeNode.getParent()` method.
+
 ## Usage
 Implement `DFSTreeNode` with your node class and all its methods:
 
