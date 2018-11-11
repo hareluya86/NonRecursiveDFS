@@ -49,28 +49,53 @@ public class TreeNodeImpl implements DFSTreeNode {
 
     @Override
     public String printStart(final List<DFSTreeNode> originalList, final List<DFSTreeNode> visited) {
-        return "";
+        String sql = "";  
+        
+        return sql;
     }
 
     @Override
     public String printBeforeChildren(final List<DFSTreeNode> originalList, final List<DFSTreeNode> visited) {
         String sql = "";
         TreeNodeImpl parent = (TreeNodeImpl) originalList.stream().filter(p -> this.isChildOf(p)).findFirst().orElse(null);
-        TreeNodeImpl previousSibling = (TreeNodeImpl) visited.stream().filter(v -> v.getParent() == this.getParent() && v.getObject() != this.getObject()).reduce((first,second) -> second).orElse(null);
-        // If this node is under a AND node and it is not the 1st child, add "JOIN previous_table p ON t.Id = p.Id "
-        if(parent != null && "AND".equalsIgnoreCase(parent.operator) && previousSibling != null) {
-            sql += "JOIN ";
-        }
-        // If this node is under an OR node and it is not the 1st child, add "UNION "
-        else if(parent != null && "OR".equalsIgnoreCase(parent.operator) && previousSibling != null) {
-            sql += "UNION ";
-        }
+        TreeNodeImpl elder = (TreeNodeImpl) visited.stream().filter(v -> v.getParent() == this.getParent() && v.getObject() != this.getObject()).reduce((first,second) -> second).orElse(null);
         
+        // If select nodes
         if ("SELECT".equalsIgnoreCase(operator)) {
-            sql += "SELECT Id FROM table t_" + this.getObject();
+            // 1. If this node has no elder sibling, print as a select statement
+            if (elder == null) {
+                sql += "SELECT Id FROM table t_" + this.getObject() + " ";
+            } 
+            // 2. If this node has an elder sibling and parent was an AND, print as join
+            else if ("AND".equalsIgnoreCase(parent.operator)) {
+                sql += "JOIN table t_" + this.getObject() + " ON t_" + this.getObject() + ".Id = t_" + elder.getObject() + ".Id ";
+            }
+            // 3. If this node has an elder sibling and parent was a OR, print as a select statement
+            else if ("OR".equalsIgnoreCase(parent.operator)) {
+                sql += "UNION SELECT Id from table t_" + this.getObject() + " ";
+            }
+            // Throw exceptions for any unknown scenarios
+            else throw new RuntimeException("Unknown case");
+        
+        // If operator nodes
         } else {
-            // For AND and OR nodes, don't print any body statements
-            sql += "SELECT Id FROM (";
+            // 1. If root node, don't print any extra statements
+            if(parent == null) {
+                sql += "(";
+            }
+            // 2. If no elder siblings, don't print any extra statements
+            else if(elder == null) {
+                sql += "(";
+            }
+            // 3. If has elder siblings and parent was an AND, print as join
+            else if("AND".equalsIgnoreCase(parent.operator)) {
+                sql += "JOIN (";
+            }
+            // 4. If has elder siblings and parent was an OR, print as UNION
+            else if("OR".equalsIgnoreCase(parent.operator)){
+                sql += "UNION (";
+            }
+            else throw new RuntimeException("Unknown case");
         }
         
         return sql;
@@ -79,28 +104,37 @@ public class TreeNodeImpl implements DFSTreeNode {
     @Override
     public String printAfterChildren(final List<DFSTreeNode> originalList, final List<DFSTreeNode> visited) {
         String sql = "";
-        // Select nodes do not have any children
-        if ("SELECT".equalsIgnoreCase(operator))
-            return sql;
-        
-        sql += ") t_" + this.getObject() + " ";
-        
         TreeNodeImpl parent = (TreeNodeImpl) originalList.stream().filter(p -> this.isChildOf(p)).findFirst().orElse(null);
-        TreeNodeImpl previousSibling = (TreeNodeImpl) visited.stream().filter(v -> v.getParent() == this.getParent() && v.getObject() != this.getObject()).reduce((first,second) -> second).orElse(null);
-        // If this node is under a AND node and it is not the 1st child, add "JOIN previous_table p ON t.Id = p.Id "
-        if(parent != null && "AND".equalsIgnoreCase(parent.operator) && previousSibling != null) {
-            sql += "ON t_" + this.getObject() + ".Id =  t_" + previousSibling.getObject() + ".Id ";
-        }
-        // If this node is under an OR node and it is not the 1st child, add "UNION "
-        else if(parent != null && "OR".equalsIgnoreCase(parent.operator) && previousSibling != null) {
-            sql += "";
+        TreeNodeImpl elder = (TreeNodeImpl) visited.stream().filter(v -> v.getParent() == this.getParent() && v.getObject() != this.getObject()).reduce((first,second) -> second).orElse(null);
+        
+        // Only for operator nodes
+        if(! "SELECT".equalsIgnoreCase(operator)) {
+            // 1. If root node, just close with alias
+            if(parent == null) {
+                sql += ") t_" + this.getObject() + " ";
+            }
+            // 2. If no elder siblings and parent was an OR, just close with alias
+            else if(elder == null) {
+                sql += ") t_" + this.getObject() + " ";
+            }
+            // 3. If has elder siblings and parent was an AND, close the join 
+            else if("AND".equalsIgnoreCase(parent.operator)) {
+                sql += ") t_" + this.getObject() + " ON t_" + this.getObject() + ".Id = t_" + elder.getObject() + ".Id ";
+            }
+            // 4. If has elder siblings and parent was an OR, close with alias
+            else if ("OR".equalsIgnoreCase(parent.operator)) {
+                sql += ") t_" + this.getObject() + " ";
+            }
+            else throw new RuntimeException("Unknown case");
         }
         return sql;
     }
 
     @Override
     public String printEnd(final List<DFSTreeNode> originalList, final List<DFSTreeNode> visited) {
-        return " ";
+        String sql = "";
+        
+        return sql;
     }
     
 }
