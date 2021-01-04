@@ -112,4 +112,26 @@ public class DFSUtil {
         }
         return print;
     }
+    
+    public static List<DFSTreeNode> extractSubtree(final List<DFSTreeNode> nodes, final DFSTreeNode parent) {
+        List<DFSTreeNode> children = new ArrayList<>();
+        /**
+         * If you sort the tree, all children will be towards the right side of
+         * the node. Just iterate till the you find no more children.
+         */
+        List<DFSTreeNode> sortedDFS = sortDFS(nodes);
+        for(int i = sortedDFS.indexOf(parent); i < sortedDFS.size(); i++) {
+            DFSTreeNode curr = sortedDFS.get(i);
+            if(curr.equals(parent) || 
+                    children.stream().map(c -> (int) c.getObject())
+                            .filter(p -> p.intValue()== (int)curr.getParent())
+                            .findFirst()
+                            .isPresent()
+                    ) {
+                children.add(curr);
+            }
+        }
+        
+        return children;
+    }
 }
